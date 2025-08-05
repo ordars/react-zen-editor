@@ -1,6 +1,6 @@
 {
   "name": "react-zen-editor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A modern, feature-rich WYSIWYG editor for React with Korean/English support",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
