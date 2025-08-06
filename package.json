@@ -1,6 +1,6 @@
 {
   "name": "react-zen-editor",
-  "version": "1.0.3",
+  "version": "1.0.9",
   "description": "A modern, feature-rich WYSIWYG editor for React with Korean/English support",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -23,7 +23,8 @@
     "test": "jest",
     "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test-dev": "./dev.sh"
   },
   "keywords": [
     "react",

@@ -206,7 +206,7 @@ git clone https://github.com/yourusername/react-zen-editor.git
 # Install dependencies
 npm install
 
-# Start development mode
+# Start library development mode (watch mode)
 npm run dev
 
 # Build the package
@@ -219,6 +219,29 @@ npm test
 npm run lint
 ```
 
+### Testing Environment
+
+This project includes a Next.js test environment for development and testing:
+
+```bash
+# Start Next.js test server from project root
+./dev.sh
+
+# OR using npm script
+npm run test-dev
+```
+
+The test environment features:
+- **Live Editor Testing**: Test all editor features in a real Next.js environment
+- **Real-time Preview**: See changes instantly during development
+- **Statistics Monitoring**: Track character count, HTML length, and more
+- **Sample Content**: Pre-loaded Korean/English test content
+- **Hot Reload**: Automatic page refresh when changes are made
+
+**Test Environment Access**:
+- Local: `http://localhost:3000/editor` (or next available port)
+- Features: Full editor demo with statistics and HTML preview
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
@@ -228,6 +251,43 @@ MIT License - see [LICENSE](LICENSE) file for details.
 Contributions are welcome! Please read our contributing guidelines and submit pull requests.
 
 ## Changelog
+
+### v1.0.9 (Latest)
+- **Enhanced Toolbar Separators**: Added consistent visual separators (|) between all toolbar groups for better organization
+- **Mobile-Responsive Separators**: Smart separator hiding on mobile devices for cleaner mobile UI experience
+- **Improved Visual Hierarchy**: Better visual grouping of toolbar functions with contextual separator display
+- **Cross-Device Consistency**: Optimal separator display on both desktop and mobile devices
+
+### v1.0.8
+- **Improved Toolbar Layout**: Repositioned font size control to appear before heading/paragraph styles
+- **Enhanced User Experience**: More logical workflow with font size settings grouped with text styling controls
+- **Better Organization**: Font size now positioned between color controls and heading/line height controls
+- **Consistent Grouping**: Text formatting tools (font size, headings, line height) now properly grouped together
+
+### v1.0.7
+- **Desktop Layout Fix**: Restored original desktop toolbar layout to v1.0.5 state
+- **Reverted Responsive Changes**: Removed mobile responsive design that caused desktop layout issues
+- **Stable Desktop Experience**: Desktop toolbar now works exactly as in v1.0.5 with proper spacing and button sizes
+- **Quality Assurance**: Fixed regression issues from v1.0.6 responsive implementation
+
+### v1.0.6 (Deprecated)
+- ⚠️ **Deprecated due to desktop layout issues** - Please use v1.0.7 instead
+- Mobile Responsive Toolbar (caused desktop regression)
+- Smart Tool Prioritization
+- Progressive Enhancement
+- Compact Mobile Design
+
+### v1.0.5
+- **Enhanced UI/UX**: Improved toolbar organization and visual feedback positioning
+- **Copy Success Position**: Moved copy success message to appear after the copy button for better user feedback
+- **Font Size Icon**: Changed font size dropdown arrow from ▼ to ↕ for better visual representation
+- **Toolbar Optimization**: Repositioned font size control before color controls for more logical workflow
+
+### v1.0.4
+- **Enhanced Copy Functionality**: Smart copy behavior - HTML code in HTML view, formatted content in editor view
+- **Improved Layout**: Reorganized bottom toolbar (copy/HTML view buttons on left, character count on right)
+- **Better Development Experience**: Added Next.js test environment with comprehensive testing tools
+- **Code Quality**: Removed legacy files and improved project structure
 
 ### v1.0.0
 - Initial release

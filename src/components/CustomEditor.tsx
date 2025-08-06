@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Eye, EyeOff, Link, Image, Video, Heading, AlignJustify, Type, Undo, Redo, Minus, Hash, Copy } from 'lucide-react';
+import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, Eye, EyeOff, Link, Image, Video, Heading, AlignJustify, Type, Undo, Redo, Minus, Hash, Copy, ChevronsUpDown } from 'lucide-react';
 import { CustomEditorProps, ModalType, ModalData } from '../types';
 import { isYouTubeUrl, getYouTubeVideoId, getCurrentAlignment } from '../utils';
 import { editorStyles } from '../styles';
@@ -498,22 +498,52 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     setShowBackgroundColorPicker(false);
   }, [showSpecialCharPicker]);
 
-  // HTML 클립보드 복사
+  // 복사 버튼 기능 (상태별로 다른 복사 방식)
   const copyToClipboard = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(htmlContent);
+      if (htmlMode) {
+        // HTML 보기 상태: HTML 코드를 복사
+        await navigator.clipboard.writeText(htmlContent);
+      } else {
+        // 에디터 보기 상태: 서식을 유지한 상태로 복사
+        if (editorRef.current) {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(editorRef.current);
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+          
+          // 서식이 유지된 상태로 클립보드에 복사
+          const successful = document.execCommand('copy');
+          selection?.removeAllRanges();
+          
+          if (!successful) {
+            // execCommand가 실패하면 텍스트만 복사
+            const plainText = editorRef.current.textContent || '';
+            await navigator.clipboard.writeText(plainText);
+          }
+        }
+      }
+      
       setShowCopySuccess(true);
       setTimeout(() => {
         setShowCopySuccess(false);
       }, 2000); // 2초 후 사라짐
     } catch (err) {
       console.error('복사 실패:', err);
-      setShowCopySuccess(true);
-      setTimeout(() => {
-        setShowCopySuccess(false);
-      }, 2000);
+      // 오류 발생 시 기본 텍스트 복사 시도
+      try {
+        const fallbackText = htmlMode ? htmlContent : (editorRef.current?.textContent || '');
+        await navigator.clipboard.writeText(fallbackText);
+        setShowCopySuccess(true);
+        setTimeout(() => {
+          setShowCopySuccess(false);
+        }, 2000);
+      } catch (fallbackErr) {
+        console.error('대체 복사도 실패:', fallbackErr);
+      }
     }
-  }, [htmlContent]);
+  }, [htmlContent, htmlMode]);
 
   // 드롭다운 옵션들
   const styleOptions = [
@@ -872,7 +902,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
               />
             </div>
             
-            <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-2">
+            <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-2 md:border-r-0 md:pr-0 md:mr-0">
               <ToolbarButton command="insertUnorderedList" icon={List} title={t.bulletList} executeCommand={executeCommand} />
               <ToolbarButton command="insertOrderedList" icon={ListOrdered} title={t.numberedList} executeCommand={executeCommand} />
             </div>
@@ -912,7 +942,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-2">
+            <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-2 md:border-r-0 md:pr-0 md:mr-0">
               {/* 글자 색상 */}
               <div className="relative color-picker-container">
                 <div className="relative">
@@ -964,21 +994,22 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center gap-1">
-              <DropdownButton
-                icon={Heading}
-                title={t.style}
-                options={styleOptions}
-                onOptionSelect={handleStyleChange}
-                placeholder={t.style}
-              />
-              
+            <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-2">
               <DropdownButton
                 icon={Type}
                 title={t.fontSize}
                 options={fontSizeOptions}
                 onOptionSelect={handleFontSizeChange}
                 placeholder={t.fontSize}
+                dropdownIcon={ChevronsUpDown}
+              />
+              
+              <DropdownButton
+                icon={Heading}
+                title={t.style}
+                options={styleOptions}
+                onOptionSelect={handleStyleChange}
+                placeholder={t.style}
               />
               
               <DropdownButton
@@ -990,7 +1021,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
               />
             </div>
             
-            <div className="flex items-center gap-1 border-l border-gray-300 pl-2 ml-2">
+            <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-2 md:border-r-0 md:pr-0 md:mr-0">
               <ToolbarButton command="undo" icon={Undo} title={t.undo} executeCommand={executeCommand} />
               <ToolbarButton command="redo" icon={Redo} title={t.redo} executeCommand={executeCommand} />
             </div>
@@ -1043,23 +1074,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       
       {/* 하단 정보 */}
       <div className="px-4 py-2 bg-gray-50 border-t border-gray-300 text-xs text-gray-500 flex justify-between items-center">
-        <span>
-          {t.characterCount}: {htmlMode ? htmlContent.length : (editorRef.current?.textContent?.length || 0)}
-        </span>
         <div className="flex items-center gap-2">
-          {showCopySuccess && (
-            <span className="text-green-600 text-xs font-medium animate-pulse">
-              {t.copySuccess}
-            </span>
-          )}
-          <button
-            type="button"
-            className="flex items-center justify-center p-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 transition-colors"
-            onClick={copyToClipboard}
-            title={t.copyToClipboard}
-          >
-            <Copy size={14} />
-          </button>
           <button
             type="button"
             className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
@@ -1067,7 +1082,23 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           >
             {htmlMode ? t.editorView : t.htmlView}
           </button>
+          <button
+            type="button"
+            className="flex items-center justify-center p-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 transition-colors"
+            onClick={copyToClipboard}
+            title={htmlMode ? t.copyToClipboard : (isKorean ? '서식 유지 복사' : 'Copy with Formatting')}
+          >
+            <Copy size={14} />
+          </button>
+          {showCopySuccess && (
+            <span className="text-green-600 text-xs font-medium animate-pulse">
+              {t.copySuccess}
+            </span>
+          )}
         </div>
+        <span>
+          {t.characterCount}: {htmlMode ? htmlContent.length : (editorRef.current?.textContent?.length || 0)}
+        </span>
       </div>
 
       {/* 모달 오버레이 */}

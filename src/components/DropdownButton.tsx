@@ -14,6 +14,7 @@ interface DropdownButtonProps {
   options: DropdownOption[];
   onOptionSelect: (value: string) => void;
   placeholder?: string;
+  dropdownIcon?: React.ComponentType<any>;
 }
 
 const DropdownButton: React.FC<DropdownButtonProps> = ({
@@ -21,7 +22,8 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
   title,
   options,
   onOptionSelect,
-  placeholder = "선택"
+  placeholder = "선택",
+  dropdownIcon: CustomDropdownIcon
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,11 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
         title={title}
       >
         <Icon size={16} />
-        <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        {CustomDropdownIcon ? (
+          <CustomDropdownIcon size={12} />
+        ) : (
+          <ChevronDown size={12} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        )}
       </button>
       
       {isOpen && (
