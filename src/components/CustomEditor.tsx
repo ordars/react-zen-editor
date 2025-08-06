@@ -436,19 +436,107 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     closeModal();
   }, [modalData, savedRange, executeCommand, closeModal]);
 
-  // 글자 색상 변경
+  // 글자 색상 변경 (CSS 기반)
   const changeTextColor = useCallback((color: string) => {
-    executeCommand('foreColor', color);
+    if (editorRef.current) {
+      editorRef.current.focus();
+      
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        if (selection.isCollapsed) {
+          // 커서만 있는 경우 - 새로운 span 요소를 생성하여 입력될 텍스트에 스타일 적용
+          const range = selection.getRangeAt(0);
+          const span = document.createElement('span');
+          span.style.color = color;
+          span.innerHTML = '&#8203;'; // 보이지 않는 문자
+          
+          range.insertNode(span);
+          
+          // 커서를 span 내부로 이동
+          range.setStart(span.firstChild!, 1);
+          range.setEnd(span.firstChild!, 1);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        } else {
+          // 텍스트가 선택된 경우 - 선택된 텍스트를 span으로 감싸고 스타일 적용
+          const range = selection.getRangeAt(0);
+          const selectedContent = range.extractContents();
+          
+          const span = document.createElement('span');
+          span.style.color = color;
+          span.appendChild(selectedContent);
+          
+          range.insertNode(span);
+          
+          // 선택을 유지
+          range.selectNodeContents(span);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+        
+        // 변경사항을 상위로 전달 (DOM 업데이트 후 실행)
+        setTimeout(() => {
+          if (onChange && editorRef.current) {
+            onChange(editorRef.current.innerHTML);
+          }
+        }, 0);
+      }
+    }
+    
     setCurrentTextColor(color);
     setShowTextColorPicker(false);
-  }, [executeCommand]);
+  }, [onChange]);
 
-  // 배경 색상 변경
+  // 배경 색상 변경 (CSS 기반)
   const changeBackgroundColor = useCallback((color: string) => {
-    executeCommand('hiliteColor', color);
+    if (editorRef.current) {
+      editorRef.current.focus();
+      
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        if (selection.isCollapsed) {
+          // 커서만 있는 경우 - 새로운 span 요소를 생성하여 입력될 텍스트에 스타일 적용
+          const range = selection.getRangeAt(0);
+          const span = document.createElement('span');
+          span.style.backgroundColor = color;
+          span.innerHTML = '&#8203;'; // 보이지 않는 문자
+          
+          range.insertNode(span);
+          
+          // 커서를 span 내부로 이동
+          range.setStart(span.firstChild!, 1);
+          range.setEnd(span.firstChild!, 1);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        } else {
+          // 텍스트가 선택된 경우 - 선택된 텍스트를 span으로 감싸고 스타일 적용
+          const range = selection.getRangeAt(0);
+          const selectedContent = range.extractContents();
+          
+          const span = document.createElement('span');
+          span.style.backgroundColor = color;
+          span.appendChild(selectedContent);
+          
+          range.insertNode(span);
+          
+          // 선택을 유지
+          range.selectNodeContents(span);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+        
+        // 변경사항을 상위로 전달 (DOM 업데이트 후 실행)
+        setTimeout(() => {
+          if (onChange && editorRef.current) {
+            onChange(editorRef.current.innerHTML);
+          }
+        }, 0);
+      }
+    }
+    
     setCurrentBackgroundColor(color);
     setShowBackgroundColorPicker(false);
-  }, [executeCommand]);
+  }, [onChange]);
 
   // 구분선 삽입
   const insertHorizontalRule = useCallback(() => {
@@ -554,13 +642,13 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   ];
 
   const fontSizeOptions = [
-    { value: '1', label: t.verySmall },
-    { value: '2', label: t.small },
-    { value: '3', label: t.normal },
-    { value: '4', label: t.large },
-    { value: '5', label: t.veryLarge },
-    { value: '6', label: t.extraLarge },
-    { value: '7', label: t.huge }
+    { value: '10px', label: t.verySmall },
+    { value: '13px', label: t.small },
+    { value: '16px', label: t.normal },
+    { value: '18px', label: t.large },
+    { value: '24px', label: t.veryLarge },
+    { value: '32px', label: t.extraLarge },
+    { value: '48px', label: t.huge }
   ];
 
   const lineHeightOptions = [
@@ -611,10 +699,53 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     }
   }, [executeCommand]);
 
-  // 글자 크기 변경 핸들러
+  // 글자 크기 변경 핸들러 (CSS 기반)
   const handleFontSizeChange = useCallback((value: string) => {
-    executeCommand('fontSize', value);
-  }, [executeCommand]);
+    if (editorRef.current) {
+      editorRef.current.focus();
+      
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        if (selection.isCollapsed) {
+          // 커서만 있는 경우 - 새로운 span 요소를 생성하여 입력될 텍스트에 스타일 적용
+          const range = selection.getRangeAt(0);
+          const span = document.createElement('span');
+          span.style.fontSize = value;
+          span.innerHTML = '&#8203;'; // 보이지 않는 문자
+          
+          range.insertNode(span);
+          
+          // 커서를 span 내부로 이동
+          range.setStart(span.firstChild!, 1);
+          range.setEnd(span.firstChild!, 1);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        } else {
+          // 텍스트가 선택된 경우 - 선택된 텍스트를 span으로 감싸고 스타일 적용
+          const range = selection.getRangeAt(0);
+          const selectedContent = range.extractContents();
+          
+          const span = document.createElement('span');
+          span.style.fontSize = value;
+          span.appendChild(selectedContent);
+          
+          range.insertNode(span);
+          
+          // 선택을 유지
+          range.selectNodeContents(span);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+        
+        // 변경사항을 상위로 전달 (DOM 업데이트 후 실행)
+        setTimeout(() => {
+          if (onChange && editorRef.current) {
+            onChange(editorRef.current.innerHTML);
+          }
+        }, 0);
+      }
+    }
+  }, [onChange]);
 
   // 줄간격 변경 핸들러
   const handleLineHeightChange = useCallback((value: string) => {

@@ -252,7 +252,20 @@ Contributions are welcome! Please read our contributing guidelines and submit pu
 
 ## Changelog
 
-### v1.0.9 (Latest)
+### v1.1.1 (Latest)
+- **🐛 Fixed Text/Background Color Bug**: Resolved issue where text and background color selections created deprecated `<font color="#color">` tags
+- **✅ CSS-based Color Styling**: Text and background colors now generate modern `<span style="color:#color">` CSS instead of legacy HTML
+- **🔧 Improved Sanitizer Compatibility**: Color styles are now preserved when content is processed by HTML sanitizers
+- **🎨 Enhanced Color Functionality**: Both text color and background color now use CSS-based approach for better compatibility
+
+### v1.1.0
+- **🐛 Fixed Font Size Bug**: Resolved issue where font size selections created deprecated `<font size="7">` tags
+- **✅ CSS-based Font Sizing**: Font sizes now generate modern `<span style="font-size:48px">` CSS instead of legacy HTML
+- **🔧 Improved Compatibility**: Font size styles are now preserved when content is processed by HTML sanitizers
+- **📏 Precise Size Values**: Font sizes now use exact pixel values (10px, 13px, 16px, 18px, 24px, 32px, 48px)
+- **⚡ Better Performance**: Font size changes now trigger proper DOM updates and content synchronization
+
+### v1.0.9
 - **Enhanced Toolbar Separators**: Added consistent visual separators (|) between all toolbar groups for better organization
 - **Mobile-Responsive Separators**: Smart separator hiding on mobile devices for cleaner mobile UI experience
 - **Improved Visual Hierarchy**: Better visual grouping of toolbar functions with contextual separator display
